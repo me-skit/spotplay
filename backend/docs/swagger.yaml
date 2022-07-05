@@ -1,0 +1,85 @@
+openapi: 3.0.0
+info: 
+  title: SpotPlay
+  description: 'API platform to show music info...'
+  contact:
+    email: support@spotplay.com
+  license: 
+    name: Apache 2.0
+    url: http://apac...
+  version: 1.0.0
+servers:
+- url: http://localhost:3000/api/v1
+tags:
+- name: Song
+  description: Songs platform
+- name: User
+  description: Platform users
+- name: Playlist
+  description: Users playlists
+components:
+  schemas:
+    Song:
+      type: object
+      propoerties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        uri:
+          type: string
+        duration:
+          type: string
+        imagen:
+          type: string
+        idAlbum:
+          type: integer
+          format: int64
+        idArtist:
+          type: integer
+          format: int64
+        idGenre:
+          type: integer
+          format: int64
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+paths: 
+  /user/signup:
+    post:
+      tag:
+      - User
+      summary: Create a new user
+      operationId: createUser
+      description: Method to create a new user that be able to use the app.
+      requestBody:
+        description: Send user data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        200:
+          description: Sing-up successfully!
+          content:
+            application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Not found
+          content: {}
+    x-codegen-request-body-name: body
