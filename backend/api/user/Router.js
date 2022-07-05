@@ -1,3 +1,6 @@
+import { validationResult } from 'express-validator'
+import { userValidations } from './validations.js'
+
 class UserRouter {
   constructor (router, controller, response, httpCode) {
     this._router = router()
@@ -10,9 +13,9 @@ class UserRouter {
   registerRoutes () {
     this._router.get('/', this.handleGetUsers.bind(this))
     this._router.get('/:id', this.handleGetUser.bind(this))
-    this._router.post('/signup', this.handlePostUser.bind(this))
+    this._router.post('/signup', userValidations, this.handlePostUser.bind(this))
     this._router.delete('/:id', this.handleDeleteUser.bind(this))
-    this._router.put('/:id', this.handleUpdateUser.bind(this))
+    this._router.put('/:id', userValidations, this.handleUpdateUser.bind(this))
   }
 
   handleSingUp (req, res) {
@@ -54,9 +57,14 @@ class UserRouter {
   }
 
   handlePostUser (req, res) {
-    const data = req.body
-    const result = this._controller.createNewUser(data)
-    this._response.success(req, res, result, this._httpCode.CREATED)
+    const errors = validationResult(req)
+    if (errors.isEmpty()) {
+      const data = req.body
+      const result = this._controller.createNewUser(data)
+      this._response.success(req, res, result, this._httpCode.CREATED)
+    } else {
+      this._response.error(req, res, errors, this._httpCode.BAD_REQUEST)
+    }
   }
 
   handleDeleteUser (req, res) {
@@ -75,18 +83,24 @@ class UserRouter {
   }
 
   handleUpdateUser (req, res) {
-    try {
-      const userId = parseInt(req.params.id)
-      const result = this._controller.getUser(userId)
-      if (result) {
-        const data = req.body
-        const result = this._controller.updateUser(data, userId)
-        this._response.success(req, res, result, this._httpCode.OK)
-      } else {
-        this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
+    const errors = validationResult(req)
+
+    if (errors.isEmpty()) {
+      try {
+        const userId = parseInt(req.params.id)
+        const result = this._controller.getUser(userId)
+        if (result) {
+          const data = req.body
+          const result = this._controller.updateUser(data, userId)
+          this._response.success(req, res, result, this._httpCode.OK)
+        } else {
+          this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
+        }
+      } catch (error) {
+        this._response.error(req, res, error, this._httpCode.INTERNAL_SERVER_ERROR)
       }
-    } catch (error) {
-      this._response.error(req, res, error, this._httpCode.INTERNAL_SERVER_ERROR)
+    } else {
+      this._response.error(req, res, errors, this._httpCode.BAD_REQUEST)
     }
   }
 }

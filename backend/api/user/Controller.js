@@ -16,14 +16,10 @@ class UserController {
   }
 
   createNewUser (user) {
-    if (user.username && user.email && user.password) {
-      const newUser = new this._entity(user)
-      newUser.encryptPassword(user.password, this._hashMethod)
-      const response = this._service.save('user', newUser)
-      return response
-    } else {
-      throw new Error('Missing parameters')
-    }
+    const newUser = new this._entity(user)
+    newUser.encryptPassword(user.password, this._hashMethod)
+    const response = this._service.save('user', newUser)
+    return response
   }
 
   deleteUser (id) {
