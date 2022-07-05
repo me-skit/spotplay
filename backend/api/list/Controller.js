@@ -5,29 +5,29 @@ class ListController {
   }
 
   getAllLists () {
-    const response = this._service.all('list')
+    const response = this._service.all('playlist')
     return response
   }
 
   getList (id) {
-    const response = this._service.getItem('list', id)
+    const response = this._service.getItem('playlist', id)
     return response
   }
 
   createNewList (list) {
     const newList = new this._entity(list)
-    const response = this._service.save('list', newList)
+    const response = this._service.save('playlist', newList)
     return response
   }
 
   deleteList (id) {
-    const response = this._service.delete('list', id)
+    const response = this._service.delete('playlist', id)
     return response
   }
 
   updateList (list, id) {
     const newList = new this._entity(list)
-    const response = this._service.update('list', newList, id)
+    const response = this._service.update('playlist', newList, id)
     return response
   }
 }

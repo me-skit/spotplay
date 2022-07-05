@@ -1,3 +1,6 @@
+import { validationResult } from 'express-validator'
+import { listValidations } from './validations.js'
+
 class ListRouter {
   constructor (router, controller, response, httpCode) {
     this._router = router()
@@ -10,9 +13,9 @@ class ListRouter {
   registerRoutes () {
     this._router.get('/', this.handleGetLists.bind(this))
     this._router.get('/:id', this.handleGetList.bind(this))
-    this._router.post('/', this.handlePostList.bind(this))
+    this._router.post('/', listValidations, this.handlePostList.bind(this))
     this._router.delete('/:id', this.handleDeleteList.bind(this))
-    this._router.put('/:id', this.handleUpdateList.bind(this))
+    this._router.put('/:id', listValidations, this.handleUpdateList.bind(this))
   }
 
   handleGetLists (req, res) {
@@ -43,9 +46,15 @@ class ListRouter {
   }
 
   handlePostList (req, res) {
-    const data = req.body
-    const result = this._controller.createNewList(data)
-    this._response.success(req, res, result, this._httpCode.CREATED)
+    const errors = validationResult(req)
+
+    if (errors.isEmpty()) {
+      const data = req.body
+      const result = this._controller.createNewList(data)
+      this._response.success(req, res, result, this._httpCode.CREATED)
+    } else {
+      this._response.error(req, res, errors, this._httpCode.BAD_REQUEST)
+    }
   }
 
   handleDeleteList (req, res) {
@@ -64,18 +73,24 @@ class ListRouter {
   }
 
   handleUpdateList (req, res) {
-    try {
-      const listId = parseInt(req.params.id)
-      const result = this._controller.getList(listId)
-      if (result) {
-        const data = req.body
-        const result = this._controller.updateList(data, listId)
-        this._response.success(req, res, result, this._httpCode.OK)
-      } else {
-        this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
+    const errors = validationResult(req)
+
+    if (errors.isEmpty()) {
+      try {
+        const listId = parseInt(req.params.id)
+        const result = this._controller.getList(listId)
+        if (result) {
+          const data = req.body
+          const result = this._controller.updateList(data, listId)
+          this._response.success(req, res, result, this._httpCode.OK)
+        } else {
+          this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
+        }
+      } catch (error) {
+        this._response.error(req, res, error, this._httpCode.INTERNAL_SERVER_ERROR)
       }
-    } catch (error) {
-      this._response.error(req, res, error, this._httpCode.INTERNAL_SERVER_ERROR)
+    } else {
+      this._response.error(req, res, errors, this._httpCode.BAD_REQUEST)
     }
   }
 }
