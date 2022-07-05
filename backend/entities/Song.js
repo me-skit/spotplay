@@ -6,9 +6,9 @@ class Song {
     this._duration = song.duration
     this._year = song.year
     this._image = song.image
-    this._idArtist = song.idArtist
-    this._idGenre = song.idGenre
-    this._idAlbum = song.idAlbum
+    this._artistId = song.artistId
+    this._gentreId = song.genreId
+    this._albumId = song.albumId
   }
 }
 
