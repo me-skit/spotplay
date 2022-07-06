@@ -7,6 +7,7 @@ import YAML from 'yamljs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 // local modules
+import { genreModule } from './genre/index.js'
 import { listModule } from './list/index.js'
 import { songModule } from './song/index.js'
 import { userModule } from './user/index.js'
@@ -32,6 +33,7 @@ class Server {
   }
 
   setRoutes () {
+    this._app.use('/api/v1/genre', genreModule(express.Router))
     this._app.use('/api/v1/playlist', listModule(express.Router))
     this._app.use('/api/v1/song', songModule(express.Router))
     this._app.use('/api/v1/user', userModule(express.Router))

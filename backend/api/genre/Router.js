@@ -1,3 +1,6 @@
+import { validationResult } from 'express-validator'
+import { genreValidations } from './validations.js'
+
 class GenreRouter {
   constructor (router, controller, response, httpCode) {
     this._router = router()
@@ -10,9 +13,9 @@ class GenreRouter {
   registerRoutes () {
     this._router.get('/', this.handleGetGenres.bind(this))
     this._router.get('/:id', this.handleGetGenre.bind(this))
-    this._router.post('/', this.handlePostGenre.bind(this))
+    this._router.post('/', genreValidations, this.handlePostGenre.bind(this))
     this._router.delete('/:id', this.handleDeleteGenre.bind(this))
-    this._router.put('/:id', this.handleUpdateGenre.bind(this))
+    this._router.put('/:id', genreValidations, this.handleUpdateGenre.bind(this))
   }
 
   handleGetGenres (req, res) {
@@ -43,9 +46,15 @@ class GenreRouter {
   }
 
   handlePostGenre (req, res) {
-    const data = req.body
-    const result = this._controller.createNewGenre(data)
-    this._response.success(req, res, result, this._httpCode.CREATED)
+    const errors = validationResult(req)
+
+    if (errors.isEmpty()) {
+      const data = req.body
+      const result = this._controller.createNewGenre(data)
+      this._response.success(req, res, result, this._httpCode.CREATED)
+    } else {
+      this._response.error(req, res, errors, this._httpCode.BAD_REQUEST)
+    }
   }
 
   handleDeleteGenre (req, res) {
@@ -64,18 +73,24 @@ class GenreRouter {
   }
 
   handleUpdateGenre (req, res) {
-    try {
-      const genreId = parseInt(req.params.id)
-      const result = this._controller.getGenre(genreId)
-      if (result) {
-        const data = req.body
-        const result = this._controller.updateGenre(data, genreId)
-        this._response.success(req, res, result, this._httpCode.OK)
-      } else {
-        this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
+    const errors = validationResult(req)
+
+    if (errors.isEmpty()) {
+      try {
+        const genreId = parseInt(req.params.id)
+        const result = this._controller.getGenre(genreId)
+        if (result) {
+          const data = req.body
+          const result = this._controller.updateGenre(data, genreId)
+          this._response.success(req, res, result, this._httpCode.OK)
+        } else {
+          this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
+        }
+      } catch (error) {
+        this._response.error(req, res, error, this._httpCode.INTERNAL_SERVER_ERROR)
       }
-    } catch (error) {
-      this._response.error(req, res, error, this._httpCode.INTERNAL_SERVER_ERROR)
+    } else {
+      this._response.error(req, res, errors, this._httpCode.BAD_REQUEST)
     }
   }
 }
