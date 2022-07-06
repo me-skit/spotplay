@@ -18,11 +18,6 @@ class UserRouter {
     this._router.put('/:id', userValidations, this.handleUpdateUser.bind(this))
   }
 
-  handleSingUp (req, res) {
-    const result = this._controller.createNewUser(req.body)
-    this._response.success(req, res, result, 201)
-  }
-
   handleGetUsers (req, res) {
     try {
       const result = this._controller.getAllUsers()

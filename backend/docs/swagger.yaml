@@ -11,12 +11,20 @@ info:
 servers:
 - url: http://localhost:3000/api/v1
 tags:
+- name: Album
+  description: Create, edit, and update albums info.
+- name: Artist
+  description: Create, edit, and update artist info.
+- name: Auth
+  description: Authentication methods.
+- name: Genre
+  description: Create, edit, and update generes.
+- name: PlayList
+  description: Create, add songs, and update play lists.
 - name: Song
-  description: Songs platform
+  description: Create, edit, and update songs info.
 - name: User
-  description: Platform users
-- name: Playlist
-  description: Users playlists
+  description: Create, edit, and update users info.
 components:
   schemas:
     Song:
@@ -51,35 +59,96 @@ components:
           type: string
         password:
           type: string
+        role:
+          type: string
 paths: 
   /user/signup:
     post:
-      tag:
+      tags:
       - User
       summary: Create a new user
       operationId: createUser
-      description: Method to create a new user that be able to use the app.
+      description: Method to create a new user that will be able to use the app.
       requestBody:
         description: Send user data
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
         required: true
       responses:
+        201:
+          description: "Created: Resurcce was created successfully"
+        400:
+          description: "Bad request: Bad format or parameter missing"          
+  /user:
+    get:
+      tags:
+      - User
+      summary: Get all users
+      description: Get al users registered into the app.
+      responses:
         200:
-          description: Sing-up successfully!
-          content:
-            application/json:
+          description: "Ok: Users info returned"
+  /user/{id}:
+    get:
+      tags:
+      - User
+      summary: Get specific user by ID
+      description: Get a user by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the user to return
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: "Ok: User info returned"
+        404:
+          description: "Not found: Resource required not found"
+    delete:
+      tags:
+      - User
+      summary: Delete specific user by ID
+      description: Delete a user by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the user to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: "Ok: User were deleted"
+        404:
+          description: "Not found: Resource required not found"
+    put:
+      tags:
+      - User
+      summary: Update specific user by ID
+      description: Update a user by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the user to delete
+        required: true
+        type: integer
+        format: int64
+      requestBody:
+        description: Send new user data
+        content:
+          application/json:
             schema:
               $ref: '#/components/schemas/User'
+        required: true        
+      responses:
+        200:
+          description: "Ok: User were updated successfully"
         400:
-          description: Bad request
-          content: {}
+          description: "Bad request: Bad format or parameter missing"          
         404:
-          description: Not found
-          content: {}
-    x-codegen-request-body-name: body
+          description: "Not found: Resource required not found"
+    
