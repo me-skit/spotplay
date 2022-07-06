@@ -12,42 +12,42 @@ servers:
 - url: http://localhost:3000/api/v1
 tags:
 - name: Album
-  description: Create, edit, and update albums info.
+  description: Create, edit, and update albums info
 - name: Artist
-  description: Create, edit, and update artist info.
+  description: Create, edit, and update artist info
 - name: Auth
-  description: Authentication methods.
+  description: Authentication methods
 - name: Genre
-  description: Create, edit, and update generes.
+  description: Create, edit, and update generes
 - name: PlayList
-  description: Create, add songs, and update play lists.
+  description: Create, add songs, and update play lists
 - name: Song
-  description: Create, edit, and update songs info.
+  description: Create, edit, and update songs info
 - name: User
-  description: Create, edit, and update users info.
+  description: Create, edit, and update users info
 components:
   schemas:
     Song:
       type: object
-      propoerties:
-        id:
-          type: integer
-          format: int64
+      properties:
         title:
           type: string
         uri:
           type: string
         duration:
           type: string
+        year:
+          type: integer
+          format: int64
         imagen:
           type: string
-        idAlbum:
+        artistId:
           type: integer
           format: int64
-        idArtist:
+        genreId:
           type: integer
           format: int64
-        idGenre:
+        albumId:
           type: integer
           format: int64
     User:
@@ -61,14 +61,23 @@ components:
           type: string
         role:
           type: string
-paths: 
+paths:
+  /user:
+    get:
+      tags:
+      - User
+      summary: Get all users
+      description: Get al users registered into the app
+      responses:
+        200:
+          description: "Ok: Users info returned"
   /user/signup:
     post:
       tags:
       - User
       summary: Create a new user
       operationId: createUser
-      description: Method to create a new user that will be able to use the app.
+      description: Method to create a new user that will be able to use the app
       requestBody:
         description: Send user data
         content:
@@ -78,18 +87,9 @@ paths:
         required: true
       responses:
         201:
-          description: "Created: Resurcce was created successfully"
+          description: "Created: Resurce was created successfully"
         400:
-          description: "Bad request: Bad format or parameter missing"          
-  /user:
-    get:
-      tags:
-      - User
-      summary: Get all users
-      description: Get al users registered into the app.
-      responses:
-        200:
-          description: "Ok: Users info returned"
+          description: "Bad request: Bad format or parameter missing"
   /user/{id}:
     get:
       tags:
@@ -122,7 +122,7 @@ paths:
         format: int64
       responses:
         200:
-          description: "Ok: User were deleted"
+          description: "Ok: User was deleted"
         404:
           description: "Not found: Resource required not found"
     put:
@@ -146,9 +146,97 @@ paths:
         required: true        
       responses:
         200:
-          description: "Ok: User were updated successfully"
+          description: "Ok: User was updated successfully"
         400:
-          description: "Bad request: Bad format or parameter missing"          
+          description: "Bad request: Bad format or parameter missing"
         404:
           description: "Not found: Resource required not found"
-    
+
+  /song:
+    get:
+      tags:
+      - Song
+      summary: Get all songs
+      description: Get al songs registered into the app.
+      responses:
+        200:
+          description: "Ok: Songs info returned"
+    post:
+      tags:
+      - Song
+      summary: Create a new song
+      operationId: createSong
+      description: Method to create a new song
+      requestBody:
+        description: Send song data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Song'
+        required: true
+      responses:
+        201:
+          description: "Created: Resurce was created successfully"
+        400:
+          description: "Bad request: Bad format or parameter missing"
+  /song/{id}:
+    get:
+      tags:
+      - Song
+      summary: Get specific song by ID
+      description: Get a song by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the song to return
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: "Ok: Song info returned"
+        404:
+          description: "Not found: Resource required not found"
+    delete:
+      tags:
+      - Song
+      summary: Delete specific song by ID
+      description: Delete a song by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the song to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: "Ok: Song was deleted"
+        404:
+          description: "Not found: Resource required not found"
+    put:
+      tags:
+      - Song
+      summary: Update specific song by ID
+      description: Update a song by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the song to delete
+        required: true
+        type: integer
+        format: int64
+      requestBody:
+        description: Send new song data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Song'
+        required: true        
+      responses:
+        200:
+          description: "Ok: Song was updated successfully"
+        400:
+          description: "Bad request: Bad format or parameter missing"
+        404:
+          description: "Not found: Resource required not found"
