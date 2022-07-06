@@ -23,7 +23,7 @@ export class DataJson {
   }
 
   getItem (table, id) {
-    return this.all(table).filter(item => item._id === id)[0]
+    return this.all(table).find(item => item._id === id)
   }
 
   all (table) {

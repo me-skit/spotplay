@@ -18,9 +18,9 @@ class UserRouter {
     this._router.put('/:id', userValidations, this.handleUpdateUser.bind(this))
   }
 
-  handleGetUsers (req, res) {
+  async handleGetUsers (req, res) {
     try {
-      const result = this._controller.getAllUsers()
+      const result = await this._controller.getAllUsers()
       if (result.length === 0) {
         this._response.success(req, res, 'No hay usuarios', this._httpCode.NOT_FOUND)
       } else {
@@ -36,60 +36,58 @@ class UserRouter {
     }
   }
 
-  handleGetUser (req, res) {
+  async handleGetUser (req, res) {
     try {
       const userId = parseInt(req.params.id)
-      const result = this._controller.getUser(userId)
+      const result = await this._controller.getUser(userId)
       if (result) {
         delete result._password
         this._response.success(req, res, result, this._httpCode.OK)
       } else {
-        this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
+        this._response.success(req, res, 'Element not found', this._httpCode.NOT_FOUND)
       }
     } catch (error) {
       this._response.error(req, res, error, this._httpCode.INTERNAL_SERVER_ERROR)
     }
   }
 
-  handlePostUser (req, res) {
+  async handlePostUser (req, res) {
     const errors = validationResult(req)
     if (errors.isEmpty()) {
       const data = req.body
-      const result = this._controller.createNewUser(data)
+      const result = await this._controller.createNewUser(data)
       this._response.success(req, res, result, this._httpCode.CREATED)
     } else {
       this._response.error(req, res, errors, this._httpCode.BAD_REQUEST)
     }
   }
 
-  handleDeleteUser (req, res) {
+  async handleDeleteUser (req, res) {
     try {
       const userId = parseInt(req.params.id)
-      const result = this._controller.getUser(userId)
+      const result = await this._controller.deleteUser(userId)
       if (result) {
-        const result = this._controller.deleteUser(userId)
-        this._response.success(req, res, result, this._httpCode.OK)
+        this._response.success(req, res, 'Item deleted at users table', this._httpCode.OK)
       } else {
-        this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
+        this._response.success(req, res, 'Element not found', this._httpCode.NOT_FOUND)
       }
     } catch (error) {
       this._response.error(req, res, error, this._httpCode.INTERNAL_SERVER_ERROR)
     }
   }
 
-  handleUpdateUser (req, res) {
+  async handleUpdateUser (req, res) {
     const errors = validationResult(req)
 
     if (errors.isEmpty()) {
       try {
         const userId = parseInt(req.params.id)
-        const result = this._controller.getUser(userId)
+        const data = req.body
+        const result = await this._controller.updateUser(data, userId)
         if (result) {
-          const data = req.body
-          const result = this._controller.updateUser(data, userId)
-          this._response.success(req, res, result, this._httpCode.OK)
+          this._response.success(req, res, 'Item modified at users table', this._httpCode.OK)
         } else {
-          this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
+          this._response.success(req, res, 'Element not found', this._httpCode.NOT_FOUND)
         }
       } catch (error) {
         this._response.error(req, res, error, this._httpCode.INTERNAL_SERVER_ERROR)

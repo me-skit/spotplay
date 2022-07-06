@@ -5,32 +5,32 @@ class UserController {
     this._hashMethod = hashMethod
   }
 
-  getAllUsers () {
-    const response = this._service.all('user')
+  async getAllUsers () {
+    const response = await this._service.all('users')
     return response
   }
 
-  getUser (id) {
-    const response = this._service.getItem('user', id)
+  async getUser (id) {
+    const response = await this._service.getItem('users', id)
     return response
   }
 
-  createNewUser (user) {
+  async createNewUser (user) {
     const newUser = new this._entity(user)
     newUser.encryptPassword(user.password, this._hashMethod)
-    const response = this._service.save('user', newUser)
+    const response = await this._service.save('users', newUser)
     return response
   }
 
-  deleteUser (id) {
-    const response = this._service.delete('user', id)
+  async deleteUser (id) {
+    const response = await this._service.delete('users', id)
     return response
   }
 
-  updateUser (user, id) {
+  async updateUser (user, id) {
     const newUser = new this._entity(user)
     newUser.encryptPassword(user.password, this._hashMethod)
-    const response = this._service.update('user', newUser, id)
+    const response = await this._service.update('users', newUser, id)
     return response
   }
 }
