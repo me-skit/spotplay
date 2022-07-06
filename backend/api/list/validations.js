@@ -8,5 +8,5 @@ export const listValidations = [
     .notEmpty()
     .withMessage('Album ID is required')
     .isInt()
-    .withMessage('Artist ID shuld be an integer')
+    .withMessage('Artist ID should be an integer')
 ]
