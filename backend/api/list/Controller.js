@@ -4,30 +4,30 @@ class ListController {
     this._entity = listEntity
   }
 
-  getAllLists () {
-    const response = this._service.all('playlist')
+  async getAllLists () {
+    const response = await this._service.all('list')
     return response
   }
 
-  getList (id) {
-    const response = this._service.getItem('playlist', id)
+  async getList (id) {
+    const response = await this._service.getItem('list', id)
     return response
   }
 
-  createNewList (list) {
+  async createNewList (list) {
     const newList = new this._entity(list)
-    const response = this._service.save('playlist', newList)
+    const response = await this._service.save('list', newList)
     return response
   }
 
-  deleteList (id) {
-    const response = this._service.delete('playlist', id)
+  async deleteList (id) {
+    const response = await this._service.delete('list', id)
     return response
   }
 
-  updateList (list, id) {
+  async updateList (list, id) {
     const newList = new this._entity(list)
-    const response = this._service.update('playlist', newList, id)
+    const response = await this._service.update('list', newList, id)
     return response
   }
 }

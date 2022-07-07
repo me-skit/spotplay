@@ -18,9 +18,9 @@ class ListRouter {
     this._router.put('/:id', listValidations, this.handleUpdateList.bind(this))
   }
 
-  handleGetLists (req, res) {
+  async handleGetLists (req, res) {
     try {
-      const result = this._controller.getAllLists()
+      const result = await this._controller.getAllLists()
       if (result.length === 0) {
         this._response.success(req, res, 'No hay listas aún', this._httpCode.NOT_FOUND)
       } else {
@@ -31,10 +31,9 @@ class ListRouter {
     }
   }
 
-  handleGetList (req, res) {
+  async handleGetList (req, res) {
     try {
-      const listId = parseInt(req.params.id)
-      const result = this._controller.getList(listId)
+      const result = await this._controller.getList(req.params.id)
       if (result) {
         this._response.success(req, res, result, this._httpCode.OK)
       } else {
@@ -45,25 +44,24 @@ class ListRouter {
     }
   }
 
-  handlePostList (req, res) {
+  async handlePostList (req, res) {
     const errors = validationResult(req)
 
     if (errors.isEmpty()) {
       const data = req.body
-      const result = this._controller.createNewList(data)
+      const result = await this._controller.createNewList(data)
       this._response.success(req, res, result, this._httpCode.CREATED)
     } else {
       this._response.error(req, res, errors, this._httpCode.BAD_REQUEST)
     }
   }
 
-  handleDeleteList (req, res) {
+  async handleDeleteList (req, res) {
     try {
-      const listId = parseInt(req.params.id)
-      const result = this._controller.getList(listId)
+      const result = await this._controller.deleteList(req.params.id)
+
       if (result) {
-        const result = this._controller.deleteList(listId)
-        this._response.success(req, res, result, this._httpCode.OK)
+        this._response.success(req, res, 'Item deleted at lists table', this._httpCode.OK)
       } else {
         this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
       }
@@ -72,17 +70,16 @@ class ListRouter {
     }
   }
 
-  handleUpdateList (req, res) {
+  async handleUpdateList (req, res) {
     const errors = validationResult(req)
 
     if (errors.isEmpty()) {
       try {
-        const listId = parseInt(req.params.id)
-        const result = this._controller.getList(listId)
+        const data = req.body
+        const result = await this._controller.updateList(data, req.params.id)
+
         if (result) {
-          const data = req.body
-          const result = this._controller.updateList(data, listId)
-          this._response.success(req, res, result, this._httpCode.OK)
+          this._response.success(req, res, 'Item modified at lists table', this._httpCode.OK)
         } else {
           this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
         }
