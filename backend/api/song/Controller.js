@@ -4,30 +4,30 @@ class SongController {
     this._entity = songEntity
   }
 
-  getAllSongs () {
-    const response = this._service.all('song')
+  async getAllSongs () {
+    const response = await this._service.all('song')
     return response
   }
 
-  getSong (id) {
-    const response = this._service.getItem('song', id)
+  async getSong (id) {
+    const response = await this._service.getItem('song', id)
     return response
   }
 
-  createNewSong (song) {
+  async createNewSong (song) {
     const newSong = new this._entity(song)
-    const response = this._service.save('song', newSong)
+    const response = await this._service.save('song', newSong)
     return response
   }
 
-  deleteSong (id) {
-    const response = this._service.delete('song', id)
+  async deleteSong (id) {
+    const response = await this._service.delete('song', id)
     return response
   }
 
-  updateSong (song, id) {
+  async updateSong (song, id) {
     const newSong = new this._entity(song)
-    const response = this._service.update('song', newSong, id)
+    const response = await this._service.update('song', newSong, id)
     return response
   }
 }

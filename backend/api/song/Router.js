@@ -15,12 +15,12 @@ class SongRouter {
     this._router.get('/:id', this.handleGetSong.bind(this))
     this._router.post('/', songValidations, this.handlePostSong.bind(this))
     this._router.delete('/:id', this.handleDeleteSong.bind(this))
-    this._router.put('/:id', songValidations, this.handleUpdateSong.bind(this))
+    this._router.put('/:id', this.handleUpdateSong.bind(this))
   }
 
-  handleGetSongs (req, res) {
+  async handleGetSongs (req, res) {
     try {
-      const result = this._controller.getAllSongs()
+      const result = await this._controller.getAllSongs()
       if (result.length === 0) {
         this._response.success(req, res, 'No hay canciones', this._httpCode.NOT_FOUND)
       } else {
@@ -31,10 +31,9 @@ class SongRouter {
     }
   }
 
-  handleGetSong (req, res) {
+  async handleGetSong (req, res) {
     try {
-      const songId = parseInt(req.params.id)
-      const result = this._controller.getSong(songId)
+      const result = await this._controller.getSong(req.params.id)
       if (result) {
         this._response.success(req, res, result, this._httpCode.OK)
       } else {
@@ -45,25 +44,23 @@ class SongRouter {
     }
   }
 
-  handlePostSong (req, res) {
+  async handlePostSong (req, res) {
     const errors = validationResult(req)
 
     if (errors.isEmpty()) {
       const data = req.body
-      const result = this._controller.createNewSong(data)
+      const result = await this._controller.createNewSong(data)
       this._response.success(req, res, result, this._httpCode.CREATED)
     } else {
       this._response.error(req, res, errors, this._httpCode.BAD_REQUEST)
     }
   }
 
-  handleDeleteSong (req, res) {
+  async handleDeleteSong (req, res) {
     try {
-      const songId = parseInt(req.params.id)
-      const result = this._controller.getSong(songId)
+      const result = await this._controller.deleteSong(req.params.id)
       if (result) {
-        const result = this._controller.deleteSong(songId)
-        this._response.success(req, res, result, this._httpCode.OK)
+        this._response.success(req, res, 'Item deleted at songs table', this._httpCode.OK)
       } else {
         this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
       }
@@ -72,17 +69,15 @@ class SongRouter {
     }
   }
 
-  handleUpdateSong (req, res) {
+  async handleUpdateSong (req, res) {
     const errors = validationResult(req)
 
     if (errors.isEmpty()) {
       try {
-        const songId = parseInt(req.params.id)
-        const result = this._controller.getSong(songId)
+        const data = req.body
+        const result = await this._controller.updateSong(data, req.params.id)
         if (result) {
-          const data = req.body
-          const result = this._controller.updateSong(data, songId)
-          this._response.success(req, res, result, this._httpCode.OK)
+          this._response.success(req, res, 'Item modified at songs table', this._httpCode.OK)
         } else {
           this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
         }

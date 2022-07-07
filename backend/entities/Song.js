@@ -7,7 +7,7 @@ class Song {
     this._year = song.year
     this._image = song.image
     this._artistId = song.artistId
-    this._gentreId = song.genreId
+    this._genreId = song.genreId
     this._albumId = song.albumId
   }
 }
