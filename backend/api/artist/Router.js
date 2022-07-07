@@ -18,9 +18,9 @@ class ArtistRouter {
     this._router.put('/:id', artistValidations, this.handleUpdateArtist.bind(this))
   }
 
-  handleGetArtists (req, res) {
+  async handleGetArtists (req, res) {
     try {
-      const result = this._controller.getAllArtists()
+      const result = await this._controller.getAllArtists()
       if (result.length === 0) {
         this._response.success(req, res, 'No hay artistas', this._httpCode.NOT_FOUND)
       } else {
@@ -31,10 +31,9 @@ class ArtistRouter {
     }
   }
 
-  handleGetArtist (req, res) {
+  async handleGetArtist (req, res) {
     try {
-      const artistId = parseInt(req.params.id)
-      const result = this._controller.getArtist(artistId)
+      const result = await this._controller.getArtist(req.params.id)
       if (result) {
         this._response.success(req, res, result, this._httpCode.OK)
       } else {
@@ -45,25 +44,24 @@ class ArtistRouter {
     }
   }
 
-  handlePostArtist (req, res) {
+  async handlePostArtist (req, res) {
     const errors = validationResult(req)
 
     if (errors.isEmpty()) {
       const data = req.body
-      const result = this._controller.createNewArtist(data)
+      const result = await this._controller.createNewArtist(data)
       this._response.success(req, res, result, this._httpCode.CREATED)
     } else {
       this._response.error(req, res, errors, this._httpCode.BAD_REQUEST)
     }
   }
 
-  handleDeleteArtist (req, res) {
+  async handleDeleteArtist (req, res) {
     try {
-      const artistId = parseInt(req.params.id)
-      const result = this._controller.getArtist(artistId)
+      const result = await this._controller.deleteArtist(req.params.id)
+
       if (result) {
-        const result = this._controller.deleteArtist(artistId)
-        this._response.success(req, res, result, this._httpCode.OK)
+        this._response.success(req, res, 'Item deleted at artists table', this._httpCode.OK)
       } else {
         this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
       }
@@ -72,17 +70,16 @@ class ArtistRouter {
     }
   }
 
-  handleUpdateArtist (req, res) {
+  async handleUpdateArtist (req, res) {
     const errors = validationResult(req)
 
     if (errors.isEmpty()) {
       try {
-        const artistId = parseInt(req.params.id)
-        const result = this._controller.getArtist(artistId)
+        const data = req.body
+        const result = await this._controller.updateArtist(data, req.params.id)
+
         if (result) {
-          const data = req.body
-          const result = this._controller.updateArtist(data, artistId)
-          this._response.success(req, res, result, this._httpCode.OK)
+          this._response.success(req, res, 'Item modified at artists table', this._httpCode.OK)
         } else {
           this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
         }
