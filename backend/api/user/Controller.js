@@ -6,31 +6,31 @@ class UserController {
   }
 
   async getAllUsers () {
-    const response = await this._service.all('users')
+    const response = await this._service.all('user')
     return response
   }
 
   async getUser (id) {
-    const response = await this._service.getItem('users', id)
+    const response = await this._service.getItem('user', id)
     return response
   }
 
   async createNewUser (user) {
     const newUser = new this._entity(user)
     newUser.encryptPassword(user.password, this._hashMethod)
-    const response = await this._service.save('users', newUser)
+    const response = await this._service.save('user', newUser)
     return response
   }
 
   async deleteUser (id) {
-    const response = await this._service.delete('users', id)
+    const response = await this._service.delete('user', id)
     return response
   }
 
   async updateUser (user, id) {
     const newUser = new this._entity(user)
     newUser.encryptPassword(user.password, this._hashMethod)
-    const response = await this._service.update('users', newUser, id)
+    const response = await this._service.update('user', newUser, id)
     return response
   }
 }

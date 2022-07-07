@@ -25,6 +25,7 @@ class UserRouter {
         this._response.success(req, res, 'No hay usuarios', this._httpCode.NOT_FOUND)
       } else {
         const users = result.map(item => {
+          item._password = ''
           delete item._password
           return item
         })
@@ -38,9 +39,9 @@ class UserRouter {
 
   async handleGetUser (req, res) {
     try {
-      const userId = parseInt(req.params.id)
-      const result = await this._controller.getUser(userId)
+      const result = await this._controller.getUser(req.params.id)
       if (result) {
+        result._password = ''
         delete result._password
         this._response.success(req, res, result, this._httpCode.OK)
       } else {
@@ -64,8 +65,7 @@ class UserRouter {
 
   async handleDeleteUser (req, res) {
     try {
-      const userId = parseInt(req.params.id)
-      const result = await this._controller.deleteUser(userId)
+      const result = await this._controller.deleteUser(req.params.id)
       if (result) {
         this._response.success(req, res, 'Item deleted at users table', this._httpCode.OK)
       } else {
@@ -81,9 +81,8 @@ class UserRouter {
 
     if (errors.isEmpty()) {
       try {
-        const userId = parseInt(req.params.id)
         const data = req.body
-        const result = await this._controller.updateUser(data, userId)
+        const result = await this._controller.updateUser(data, req.params.id)
         if (result) {
           this._response.success(req, res, 'Item modified at users table', this._httpCode.OK)
         } else {

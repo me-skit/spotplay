@@ -44,6 +44,12 @@ export class DbMongo {
   }
 
   async update (table, data, id) {
+    Object.keys(data).forEach(key => {
+      if (data[key] === null) {
+        delete data[key]
+      }
+    })
+
     const result = await this._models[table].findByIdAndUpdate(id, data)
     return result
   }
