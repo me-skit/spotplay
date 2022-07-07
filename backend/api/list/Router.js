@@ -61,7 +61,7 @@ class ListRouter {
       const result = await this._controller.deleteList(req.params.id)
 
       if (result) {
-        this._response.success(req, res, 'Item deleted at lists table', this._httpCode.OK)
+        this._response.success(req, res, 'Item deleted at list table', this._httpCode.OK)
       } else {
         this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
       }
@@ -79,7 +79,7 @@ class ListRouter {
         const result = await this._controller.updateList(data, req.params.id)
 
         if (result) {
-          this._response.success(req, res, 'Item modified at lists table', this._httpCode.OK)
+          this._response.success(req, res, 'Item modified at list table', this._httpCode.OK)
         } else {
           this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
         }

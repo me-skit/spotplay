@@ -18,9 +18,9 @@ class GenreRouter {
     this._router.put('/:id', genreValidations, this.handleUpdateGenre.bind(this))
   }
 
-  handleGetGenres (req, res) {
+  async handleGetGenres (req, res) {
     try {
-      const result = this._controller.getAllGenres()
+      const result = await this._controller.getAllGenres()
       if (result.length === 0) {
         this._response.success(req, res, 'No hay géneros aún', this._httpCode.NOT_FOUND)
       } else {
@@ -31,10 +31,9 @@ class GenreRouter {
     }
   }
 
-  handleGetGenre (req, res) {
+  async handleGetGenre (req, res) {
     try {
-      const genreId = parseInt(req.params.id)
-      const result = this._controller.getGenre(genreId)
+      const result = await this._controller.getGenre(req.params.id)
       if (result) {
         this._response.success(req, res, result, this._httpCode.OK)
       } else {
@@ -45,25 +44,23 @@ class GenreRouter {
     }
   }
 
-  handlePostGenre (req, res) {
+  async handlePostGenre (req, res) {
     const errors = validationResult(req)
 
     if (errors.isEmpty()) {
       const data = req.body
-      const result = this._controller.createNewGenre(data)
+      const result = await this._controller.createNewGenre(data)
       this._response.success(req, res, result, this._httpCode.CREATED)
     } else {
       this._response.error(req, res, errors, this._httpCode.BAD_REQUEST)
     }
   }
 
-  handleDeleteGenre (req, res) {
+  async handleDeleteGenre (req, res) {
     try {
-      const genreId = parseInt(req.params.id)
-      const result = this._controller.getGenre(genreId)
+      const result = await this._controller.deleteGenre(req.params.id)
       if (result) {
-        const result = this._controller.deleteGenre(genreId)
-        this._response.success(req, res, result, this._httpCode.OK)
+        this._response.success(req, res, 'Item deleted at genres table', this._httpCode.OK)
       } else {
         this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
       }
@@ -72,17 +69,16 @@ class GenreRouter {
     }
   }
 
-  handleUpdateGenre (req, res) {
+  async handleUpdateGenre (req, res) {
     const errors = validationResult(req)
 
     if (errors.isEmpty()) {
       try {
-        const genreId = parseInt(req.params.id)
-        const result = this._controller.getGenre(genreId)
+        const data = req.body
+        const result = await this._controller.updateGenre(data, req.params.id)
+
         if (result) {
-          const data = req.body
-          const result = this._controller.updateGenre(data, genreId)
-          this._response.success(req, res, result, this._httpCode.OK)
+          this._response.success(req, res, 'Item modified at genres table', this._httpCode.OK)
         } else {
           this._response.success(req, res, 'Elemento no encontrado', this._httpCode.NOT_FOUND)
         }
