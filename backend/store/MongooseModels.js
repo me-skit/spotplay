@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   },
   _email: {
     type: String,
-    required: true
+    required: false
   },
   _password: {
     type: String,
@@ -26,27 +26,27 @@ const songSchema = new mongoose.Schema({
   },
   _duration: {
     type: String,
-    required: true
+    required: false
   },
   _year: {
     type: Number,
-    required: true
+    required: false
   },
   _image: {
     type: String,
-    required: true
+    required: false
   },
   _artistId: {
     type: String,
-    required: true
+    required: false
   },
   _genreId: {
     type: String,
-    required: true
+    required: false
   },
   _albumId: {
     type: String,
-    required: true
+    required: false
   }
 })
 
@@ -75,7 +75,7 @@ const artistSchema = new mongoose.Schema({
   },
   _avatar: {
     type: String,
-    required: true
+    required: false
   }
 })
 
@@ -86,11 +86,11 @@ const albumSchema = new mongoose.Schema({
   },
   _year: {
     type: Number,
-    required: true
+    required: false
   },
   _cover: {
     type: String,
-    required: true
+    required: false
   },
   _artistId: {
     type: String,

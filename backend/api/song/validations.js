@@ -18,18 +18,15 @@ export const songValidations = [
     .isInt()
     .withMessage('Song year should be numeric'),
   check('artistId')
+    .optional()
     .notEmpty()
-    .withMessage('Artist ID is required')
-    .isInt()
-    .withMessage('Artist ID should be an integer'),
+    .withMessage('Artist ID should not be empty'),
   check('genreId')
+    .optional()
     .notEmpty()
-    .withMessage('Genre ID is required')
-    .isInt()
-    .withMessage('Genre ID should be an integer'),
+    .withMessage('Genre ID should not be empty'),
   check('albumId')
+    .optional()
     .notEmpty()
-    .withMessage('Album ID is required')
-    .isInt()
-    .withMessage('Album ID should be an integer')
+    .withMessage('Album ID should not be empty')
 ]
