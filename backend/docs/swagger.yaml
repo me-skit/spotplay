@@ -318,7 +318,7 @@ paths:
         401:
           description: "Unauthorized: Not enough authorization to perform the action"
 
-  /list:
+  /playlist:
     get:
       tags:
       - PlayList
@@ -349,7 +349,7 @@ paths:
           description: "Bad request: Bad format or parameter missing"
         401:
           description: "Unauthorized: Not enough authorization to perform the action"
-  /list/{id}:
+  /playlist/{id}:
     get:
       tags:
       - PlayList
