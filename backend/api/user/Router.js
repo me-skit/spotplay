@@ -15,7 +15,7 @@ class UserRouter {
     this._router.get('/:id', this.handleGetUser.bind(this))
     this._router.post('/signup', userValidations, this.handlePostUser.bind(this))
     this._router.delete('/:id', this.handleDeleteUser.bind(this))
-    this._router.put('/:id', userValidations, this.handleUpdateUser.bind(this))
+    this._router.put('/:id', this.handleUpdateUser.bind(this))
   }
 
   async handleGetUsers (req, res) {

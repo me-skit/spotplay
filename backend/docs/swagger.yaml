@@ -42,14 +42,11 @@ components:
         imagen:
           type: string
         artistId:
-          type: integer
-          format: int64
+          type: string
         genreId:
-          type: integer
-          format: int64
+          type: string
         albumId:
-          type: integer
-          format: int64
+          type: string
     User:
       type: object
       properties:
@@ -101,8 +98,7 @@ paths:
         in: path
         description: ID for the user to return
         required: true
-        type: integer
-        format: int64
+        type: string
       responses:
         200:
           description: "Ok: User info returned"
@@ -118,8 +114,7 @@ paths:
         in: path
         description: ID for the user to delete
         required: true
-        type: integer
-        format: int64
+        type: string
       responses:
         200:
           description: "Ok: User was deleted"
@@ -135,8 +130,7 @@ paths:
         in: path
         description: ID for the user to delete
         required: true
-        type: integer
-        format: int64
+        type: string
       requestBody:
         description: Send new user data
         content:
@@ -190,8 +184,7 @@ paths:
         in: path
         description: ID for the song to return
         required: true
-        type: integer
-        format: int64
+        type: string
       responses:
         200:
           description: "Ok: Song info returned"
@@ -207,8 +200,7 @@ paths:
         in: path
         description: ID for the song to delete
         required: true
-        type: integer
-        format: int64
+        type: string
       responses:
         200:
           description: "Ok: Song was deleted"
@@ -224,8 +216,7 @@ paths:
         in: path
         description: ID for the song to delete
         required: true
-        type: integer
-        format: int64
+        type: string
       requestBody:
         description: Send new song data
         content:

@@ -29,7 +29,10 @@ class UserController {
 
   async updateUser (user, id) {
     const newUser = new this._entity(user)
-    newUser.encryptPassword(user.password, this._hashMethod)
+    if (newUser._password) {
+      newUser.encryptPassword(user.password, this._hashMethod)
+    }
+
     const response = await this._service.update('user', newUser, id)
     return response
   }
