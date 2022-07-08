@@ -9,9 +9,10 @@ export const helpers = {
   comparePassword: (password, hashPassword) => {
     return bcrypt.compareSync(password, hashPassword)
   },
-  generateToken: (idUser) => {
+  generateToken: (idUser, userRole) => {
     return jwt.sign({
-      id: idUser
+      id: idUser,
+      role: userRole
     }, config.jwt.secret, {
       expiresIn: '1h'
     })
