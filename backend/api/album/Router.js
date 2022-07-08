@@ -1,21 +1,24 @@
 import { validationResult } from 'express-validator'
-import { albumValidations } from './validations.js'
+import { albumValidations as validations } from './validations.js'
 
 class AlbumRouter {
-  constructor (router, controller, response, httpCode) {
+  constructor (router, controller, response, httpCode, checkAuthorization) {
     this._router = router()
     this._controller = controller
     this._response = response
     this._httpCode = httpCode
+    this._validations = validations
+    this._validationResult = validationResult
+    this._checkToken = checkAuthorization
     this.registerRoutes()
   }
 
   registerRoutes () {
-    this._router.get('/', this.handleGetAlbums.bind(this))
-    this._router.get('/:id', this.handleGetAlbum.bind(this))
-    this._router.post('/', albumValidations, this.handlePostAlbum.bind(this))
-    this._router.delete('/:id', this.handleDeleteAlbum.bind(this))
-    this._router.put('/:id', this.handleUpdateAlbum.bind(this))
+    this._router.get('/', this._checkToken('read'), this.handleGetAlbums.bind(this))
+    this._router.get('/:id', this._checkToken('read'), this.handleGetAlbum.bind(this))
+    this._router.post('/', [this._checkToken('read'), this._validations], this.handlePostAlbum.bind(this))
+    this._router.delete('/:id', this._checkToken('read'), this.handleDeleteAlbum.bind(this))
+    this._router.put('/:id', this._checkToken('read'), this.handleUpdateAlbum.bind(this))
   }
 
   async handleGetAlbums (req, res) {
@@ -45,7 +48,7 @@ class AlbumRouter {
   }
 
   async handlePostAlbum (req, res) {
-    const errors = validationResult(req)
+    const errors = this._validationResult(req)
 
     if (errors.isEmpty()) {
       const data = req.body
@@ -71,7 +74,7 @@ class AlbumRouter {
   }
 
   async handleUpdateAlbum (req, res) {
-    const errors = validationResult(req)
+    const errors = this._validationResult(req)
 
     if (errors.isEmpty()) {
       try {

@@ -2,23 +2,28 @@ import mongoose from 'mongoose'
 import { config } from '../config/default.js'
 import { models } from './MongooseModels.js'
 
-const mongodb = async () => {
-  try {
-    const db = await mongoose.connect(config.mongoConnection.uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    })
-
-    console.log(`MongoDB connected: ${db.connection.host}`)
-  } catch (error) {
-    console.log(error)
-  }
-}
-
 export class DbMongo {
+  static _connection = null
+
   constructor () {
-    mongodb()
+    if (DbMongo._connection === null) {
+      DbMongo._connection = this.mongodb()
+    }
+
     this._models = models
+  }
+
+  async mongodb () {
+    try {
+      const db = await mongoose.connect(config.mongoConnection.uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      })
+
+      console.log(`MongoDB connected: ${db.connection.host}`)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async save (table, data) {

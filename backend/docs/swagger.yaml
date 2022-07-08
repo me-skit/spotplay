@@ -26,7 +26,22 @@ tags:
 - name: User
   description: Create, edit, and update users info
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: JSON authorization header using a token
+      scheme: bearer
+      bearerFormat: JWT 
   schemas:
+    Auth:
+      type: object
+      properties:
+        username:
+          type: string
+          required: true
+        password:
+          type: string
+          required: true
     Song:
       type: object
       properties:
@@ -58,7 +73,60 @@ components:
           type: string
         role:
           type: string
+    List:
+      type: object
+      properties:
+        name:
+          type: string
+        userId:
+          type: string
+    Genre:
+      type: object
+      properties:
+        name:
+          type: string
+    Artist:
+      type: object
+      properties:
+        name:
+          type: string
+        avatar:
+          type: string
+    Album:
+      type: object
+      properties:
+        name:
+          type: string
+        year:
+          type: integer
+          format: int64
+        cover:
+          type: string
+        artistId:
+          type: string
+security:
+  - bearerAuth: []
+
 paths:
+  /auth/signin:
+    post:
+      tags:
+      - Auth
+      summary: Login action
+      description: Users must provide username and password to get a token and perform actions
+      requestBody:
+        description: Username and password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auth'
+        required: true
+      responses:
+        200:
+          description: "Ok: Users info and a token returned"
+        400:
+          description: "Bad request: User or password invalid"
+
   /user:
     get:
       tags:
@@ -68,6 +136,8 @@ paths:
       responses:
         200:
           description: "Ok: Users info returned"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
   /user/signup:
     post:
       tags:
@@ -104,6 +174,8 @@ paths:
           description: "Ok: User info returned"
         404:
           description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
     delete:
       tags:
       - User
@@ -120,6 +192,8 @@ paths:
           description: "Ok: User was deleted"
         404:
           description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
     put:
       tags:
       - User
@@ -145,6 +219,8 @@ paths:
           description: "Bad request: Bad format or parameter missing"
         404:
           description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
 
   /song:
     get:
@@ -155,6 +231,8 @@ paths:
       responses:
         200:
           description: "Ok: Songs info returned"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
     post:
       tags:
       - Song
@@ -173,6 +251,8 @@ paths:
           description: "Created: Resurce was created successfully"
         400:
           description: "Bad request: Bad format or parameter missing"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
   /song/{id}:
     get:
       tags:
@@ -190,6 +270,8 @@ paths:
           description: "Ok: Song info returned"
         404:
           description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
     delete:
       tags:
       - Song
@@ -206,6 +288,8 @@ paths:
           description: "Ok: Song was deleted"
         404:
           description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
     put:
       tags:
       - Song
@@ -231,3 +315,389 @@ paths:
           description: "Bad request: Bad format or parameter missing"
         404:
           description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+
+  /list:
+    get:
+      tags:
+      - PlayList
+      summary: Get all lists
+      description: Get al lists registered into the app.
+      responses:
+        200:
+          description: "Ok: List info returned"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+    post:
+      tags:
+      - PlayList
+      summary: Create a new list
+      operationId: createList
+      description: Method to create a new list
+      requestBody:
+        description: Send list data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+        required: true
+      responses:
+        201:
+          description: "Created: Resurce was created successfully"
+        400:
+          description: "Bad request: Bad format or parameter missing"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+  /list/{id}:
+    get:
+      tags:
+      - PlayList
+      summary: Get specific list by ID
+      description: Get a list by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the list to return
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Ok: List info returned"
+        404:
+          description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+    delete:
+      tags:
+      - PlayList
+      summary: Delete specific list by ID
+      description: Delete a list by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the list to delete
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Ok: List was deleted"
+        404:
+          description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+    put:
+      tags:
+      - PlayList
+      summary: Update specific list by ID
+      description: Update a list by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the list to delete
+        required: true
+        type: string
+      requestBody:
+        description: Send new list data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+        required: true        
+      responses:
+        200:
+          description: "Ok: List was updated successfully"
+        400:
+          description: "Bad request: Bad format or parameter missing"
+        404:
+          description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+
+  /genre:
+    get:
+      tags:
+      - Genre
+      summary: Get all genres
+      description: Get al genres registered into the app.
+      responses:
+        200:
+          description: "Ok: Genres info returned"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+    post:
+      tags:
+      - Genre
+      summary: Create a new genre
+      operationId: createGenre
+      description: Method to create a new genre
+      requestBody:
+        description: Send genre data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Genre'
+        required: true
+      responses:
+        201:
+          description: "Created: Resurce was created successfully"
+        400:
+          description: "Bad request: Bad format or parameter missing"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+  /genre/{id}:
+    get:
+      tags:
+      - Genre
+      summary: Get specific genre by ID
+      description: Get a genre by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the genre to return
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Ok: Genre info returned"
+        404:
+          description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+    delete:
+      tags:
+      - Genre
+      summary: Delete specific genre by ID
+      description: Delete a genre by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the genre to delete
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Ok: Genre was deleted"
+        404:
+          description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+    put:
+      tags:
+      - Genre
+      summary: Update specific genre by ID
+      description: Update a genre by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the genre to delete
+        required: true
+        type: string
+      requestBody:
+        description: Send new genre data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Genre'
+        required: true        
+      responses:
+        200:
+          description: "Ok: Genre was updated successfully"
+        400:
+          description: "Bad request: Bad format or parameter missing"
+        404:
+          description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+
+  /artist:
+    get:
+      tags:
+      - Artist
+      summary: Get all artists
+      description: Get al artists registered into the app.
+      responses:
+        200:
+          description: "Ok: Artists info returned"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+    post:
+      tags:
+      - Artist
+      summary: Create a new artist
+      operationId: createArtist
+      description: Method to create a new artist
+      requestBody:
+        description: Send artist data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Artist'
+        required: true
+      responses:
+        201:
+          description: "Created: Resurce was created successfully"
+        400:
+          description: "Bad request: Bad format or parameter missing"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+  /artist/{id}:
+    get:
+      tags:
+      - Artist
+      summary: Get specific artist by ID
+      description: Get a artist by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the artist to return
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Ok: Artist info returned"
+        404:
+          description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+    delete:
+      tags:
+      - Artist
+      summary: Delete specific artist by ID
+      description: Delete a artist by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the artist to delete
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Ok: Artist was deleted"
+        404:
+          description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+    put:
+      tags:
+      - Artist
+      summary: Update specific artist by ID
+      description: Update a artist by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the artist to delete
+        required: true
+        type: string
+      requestBody:
+        description: Send new artist data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Artist'
+        required: true        
+      responses:
+        200:
+          description: "Ok: Artist was updated successfully"
+        400:
+          description: "Bad request: Bad format or parameter missing"
+        404:
+          description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+
+  /album:
+    get:
+      tags:
+      - Album
+      summary: Get all albums
+      description: Get al albums registered into the app.
+      responses:
+        200:
+          description: "Ok: Albums info returned"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+    post:
+      tags:
+      - Album
+      summary: Create a new albums
+      operationId: createAlbums
+      description: Method to create a new albums
+      requestBody:
+        description: Send albums data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Album'
+        required: true
+      responses:
+        201:
+          description: "Created: Resurce was created successfully"
+        400:
+          description: "Bad request: Bad format or parameter missing"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+  /album/{id}:
+    get:
+      tags:
+      - Album
+      summary: Get specific albums by ID
+      description: Get a albums by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the albums to return
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Ok: Album info returned"
+        404:
+          description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+    delete:
+      tags:
+      - Album
+      summary: Delete specific album by ID
+      description: Delete a album by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the album to delete
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Ok: Album was deleted"
+        404:
+          description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"
+    put:
+      tags:
+      - Album
+      summary: Update specific album by ID
+      description: Update a album by ID
+      parameters:
+      - name: id
+        in: path
+        description: ID for the album to delete
+        required: true
+        type: string
+      requestBody:
+        description: Send new album data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Album'
+        required: true        
+      responses:
+        200:
+          description: "Ok: Album was updated successfully"
+        400:
+          description: "Bad request: Bad format or parameter missing"
+        404:
+          description: "Not found: Resource required not found"
+        401:
+          description: "Unauthorized: Not enough authorization to perform the action"

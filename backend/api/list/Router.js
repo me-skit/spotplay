@@ -1,21 +1,24 @@
 import { validationResult } from 'express-validator'
-import { listValidations } from './validations.js'
+import { listValidations as validations } from './validations.js'
 
 class ListRouter {
-  constructor (router, controller, response, httpCode) {
+  constructor (router, controller, response, httpCode, checkAuthorization) {
     this._router = router()
     this._controller = controller
     this._response = response
     this._httpCode = httpCode
+    this._validations = validations
+    this._validationResult = validationResult
+    this._checkToken = checkAuthorization
     this.registerRoutes()
   }
 
   registerRoutes () {
-    this._router.get('/', this.handleGetLists.bind(this))
-    this._router.get('/:id', this.handleGetList.bind(this))
-    this._router.post('/', listValidations, this.handlePostList.bind(this))
-    this._router.delete('/:id', this.handleDeleteList.bind(this))
-    this._router.put('/:id', listValidations, this.handleUpdateList.bind(this))
+    this._router.get('/', this._checkToken('read'), this.handleGetLists.bind(this))
+    this._router.get('/:id', this._checkToken('read'), this.handleGetList.bind(this))
+    this._router.post('/', [this._checkToken('read'), this._validations], this.handlePostList.bind(this))
+    this._router.delete('/:id', this._checkToken('read'), this.handleDeleteList.bind(this))
+    this._router.put('/:id', [this._checkToken('read'), this._validations], this.handleUpdateList.bind(this))
   }
 
   async handleGetLists (req, res) {
@@ -45,7 +48,7 @@ class ListRouter {
   }
 
   async handlePostList (req, res) {
-    const errors = validationResult(req)
+    const errors = this._validationResult(req)
 
     if (errors.isEmpty()) {
       const data = req.body
@@ -71,7 +74,7 @@ class ListRouter {
   }
 
   async handleUpdateList (req, res) {
-    const errors = validationResult(req)
+    const errors = this._validationResult(req)
 
     if (errors.isEmpty()) {
       try {

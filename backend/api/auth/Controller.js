@@ -12,7 +12,7 @@ export default class AuthController {
       if (result) {
         const compareResult = this._comparePassword(user.password, result._password)
         if (compareResult) {
-          const userToken = this._generateToken(result._id)
+          const userToken = this._generateToken(result._id, result._role)
           return new this._entity({
             state: true,
             username: result._username,

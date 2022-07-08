@@ -1,21 +1,24 @@
 import { validationResult } from 'express-validator'
-import { userValidations } from './validations.js'
+import { userValidations as validations } from './validations.js'
 
 class UserRouter {
-  constructor (router, controller, response, httpCode) {
+  constructor (router, controller, response, httpCode, checkAuthorization) {
     this._router = router()
     this._controller = controller
     this._response = response
     this._httpCode = httpCode
+    this._validations = validations
+    this._validationResult = validationResult
+    this._checkToken = checkAuthorization
     this.registerRoutes()
   }
 
   registerRoutes () {
-    this._router.get('/', this.handleGetUsers.bind(this))
-    this._router.get('/:id', this.handleGetUser.bind(this))
-    this._router.post('/signup', userValidations, this.handlePostUser.bind(this))
-    this._router.delete('/:id', this.handleDeleteUser.bind(this))
-    this._router.put('/:id', this.handleUpdateUser.bind(this))
+    this._router.get('/', this._checkToken('read'), this.handleGetUsers.bind(this))
+    this._router.get('/:id', this._checkToken('read'), this.handleGetUser.bind(this))
+    this._router.post('/signup', this._validations, this.handlePostUser.bind(this))
+    this._router.delete('/:id', this._checkToken('admin'), this.handleDeleteUser.bind(this))
+    this._router.put('/:id', this._checkToken('edit'), this.handleUpdateUser.bind(this))
   }
 
   async handleGetUsers (req, res) {
@@ -53,7 +56,7 @@ class UserRouter {
   }
 
   async handlePostUser (req, res) {
-    const errors = validationResult(req)
+    const errors = this._validationResult(req)
     if (errors.isEmpty()) {
       const data = req.body
       const result = await this._controller.createNewUser(data)
@@ -77,7 +80,7 @@ class UserRouter {
   }
 
   async handleUpdateUser (req, res) {
-    const errors = validationResult(req)
+    const errors = this._validationResult(req)
 
     if (errors.isEmpty()) {
       try {

@@ -15,5 +15,10 @@ export const userValidations = [
     .matches(/\d/)
     .withMessage('Password should have at least one number')
     .matches(/[¡!@#$%^&*(),.?":{}|<>]/)
-    .withMessage('Password should have at least one sepcial character')
+    .withMessage('Password should have at least one sepcial character'),
+  check('role')
+    .notEmpty()
+    .withMessage('Role is required')
+    .matches(/(admin|reader|editor)/)
+    .withMessage('Role should be admin, reader or editor')
 ]

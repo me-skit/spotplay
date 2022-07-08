@@ -1,21 +1,24 @@
 import { validationResult } from 'express-validator'
-import { genreValidations } from './validations.js'
+import { genreValidations as validations } from './validations.js'
 
 class GenreRouter {
-  constructor (router, controller, response, httpCode) {
+  constructor (router, controller, response, httpCode, checkAuthorization) {
     this._router = router()
     this._controller = controller
     this._response = response
     this._httpCode = httpCode
+    this._validations = validations
+    this._validationResult = validationResult
+    this._checkToken = checkAuthorization
     this.registerRoutes()
   }
 
   registerRoutes () {
-    this._router.get('/', this.handleGetGenres.bind(this))
-    this._router.get('/:id', this.handleGetGenre.bind(this))
-    this._router.post('/', genreValidations, this.handlePostGenre.bind(this))
-    this._router.delete('/:id', this.handleDeleteGenre.bind(this))
-    this._router.put('/:id', genreValidations, this.handleUpdateGenre.bind(this))
+    this._router.get('/', this._checkToken('read'), this.handleGetGenres.bind(this))
+    this._router.get('/:id', this._checkToken('read'), this.handleGetGenre.bind(this))
+    this._router.post('/', [this._checkToken('edit'), this._validations], this.handlePostGenre.bind(this))
+    this._router.delete('/:id', this._checkToken('edit'), this.handleDeleteGenre.bind(this))
+    this._router.put('/:id', [this._checkToken('edit'), this._validations], this.handleUpdateGenre.bind(this))
   }
 
   async handleGetGenres (req, res) {
@@ -45,7 +48,7 @@ class GenreRouter {
   }
 
   async handlePostGenre (req, res) {
-    const errors = validationResult(req)
+    const errors = this._validationResult(req)
 
     if (errors.isEmpty()) {
       const data = req.body
@@ -70,7 +73,7 @@ class GenreRouter {
   }
 
   async handleUpdateGenre (req, res) {
-    const errors = validationResult(req)
+    const errors = this._validationResult(req)
 
     if (errors.isEmpty()) {
       try {
