@@ -29,7 +29,6 @@ export class DbMongo {
 
   async all (table) {
     const result = await this._models[table].find()
-    // return JSON.stringify(result)
     return result
   }
 
@@ -53,26 +52,11 @@ export class DbMongo {
     const result = await this._models[table].findByIdAndUpdate(id, data)
     return result
   }
+
+  async findByAttribute (table, attrib, value) {
+    const query = {}
+    query[attrib] = value
+    const result = await this._models[table].find(query)
+    return result
+  }
 }
-
-// mongodb()
-// const test = new DBMongo()
-// test.insertData('user', {
-//   _username: 'Test4',
-//   _email: 'test4@mail.com',
-//   _passwrod: 'Admin123*'
-// }).then(result => console.log(result), error => console.log(error))
-
-// test.all('user').then(result => console.log(result), error => console.log(error))
-
-// test.delete('user', '62c7165b347bcd35a16a5390').then(result => console.log(result), error => console.log(error))
-
-// test.all('user').then(result => console.log(result), error => console.log(error))
-
-// test.update('user', '62c716c4165a5e3e362f383e', {
-//   _username: 'Test3',
-//   _email: 'test3@gmail.com'
-// }).then(result => console.log(result), error => console.log(error))
-
-// test.all('user').then(result => console.log(result), error => console.log(error))
-// test.getItem('user', '62c716c4165a5e3e362f383e').then(result => console.log(result), error => console.log(error))
